@@ -1,0 +1,17 @@
+---
+- hosts: all
+  remote_user: root
+  become: true
+  gather_facts: true
+#  roles:
+#    - application_deployer
+  tasks:
+    - name: Verifier si l'application java est bien lancée
+      command: "curl -s -o /dev/null -w '%{http_code}' http://{{ansible_hostname}}:8080/api/v1/annonce"
+      register: response_status_code
+    - name: Verifier si la réponse est égale à 200
+      assert:
+        that:
+          - response_status_code == 200
+        success_msg: l'application est bien lancée
+        fail_msg: l'application n'a pas démarré

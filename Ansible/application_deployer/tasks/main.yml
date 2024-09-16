@@ -1,0 +1,49 @@
+---
+# tasks file for application_deployer
+- name: Installation des packets sur Ubuntu
+  apt:
+    name: "{{item}}"
+    state: present
+  loop:
+    - git
+    - "openjdk-{{java_version}}-jdk"
+    - maven
+  when: "ansible_distribution=='Ubuntu'"
+
+- name: Installation des packets sur Fedora
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - git
+    - "java-{{java_version}}-openjdk"
+    - maven
+  when: "ansible_distribution=='Fedora'"
+
+- name: Cloner le projet
+  git:
+    repo: "{{git_repo}}"
+    dest: /opt
+    version: "{{git_branch}}"
+
+- name: Builder l'application
+  command: mvn clean package -DskipTests
+  args:
+    chdir: /opt/annonce-api
+
+#- name: Lancer l'application
+#  command: java -jar annonce-api-0.0.1-SNAPSHOT.jar --spring.profiles.active=test &
+#  args:
+#    chdir: /opt/annonce-api/target
+
+- name: Verifier si l'application java est bien lancée
+  command: "curl -s -o /dev/null -w '%{http_code}' http://{{ansible_hostname}}:8080/api/v1/annonce"
+  register: response_status_code
+  ignore_errors: true
+
+- name: Verifier si la réponse est égale à 200
+  assert:
+    that:
+      - response_status_code == 200
+    success_msg: l'application est bien lancée
+    fail_msg: l'application n'a pas démarré

@@ -1,0 +1,26 @@
+services:
+  ubuntu-1:
+    build:
+      dockerfile: ./Dockerfile-ubuntu
+    container_name: ubuntu-1
+    tty: true
+
+  ubuntu-2:
+    build:
+      dockerfile: ./Dockerfile-ubuntu
+    container_name: ubuntu-2
+    tty: true
+
+  fedora:
+    build:
+      dockerfile: Dockerfile-fedora
+    container_name: fedora
+    tty: true
+
+  ansible:
+    build:
+      dockerfile: Dockerfile-Ansible
+    container_name: ansible
+    tty: true
+    volumes:
+      - ./Ansible:/Ansible

@@ -1,0 +1,7 @@
+
+- name: Faire un test
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - role: application_deployer

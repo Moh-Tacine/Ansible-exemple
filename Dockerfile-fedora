@@ -1,0 +1,5 @@
+FROM fedora
+
+RUN yum update -y
+
+RUN yum install -y curl vim openssh-server
